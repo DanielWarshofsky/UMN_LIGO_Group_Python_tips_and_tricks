@@ -14303,19 +14303,18 @@ a.anchor-link {
 <h3 id="Example">Example<a class="anchor-link" href="#Example">&#182;</a></h3><p>For this example we will be drawing from a multivariate normal with many dimensions. Our covariance matrix has a specific form which we will be exploiting for speed ups later.</p>
 <p>Our covariance matrix looks like
 $$
-\sigma=
-\begin{bmatrix} 
-a<em>{0} &amp; 0     &amp; \cdots &amp; 0      &amp; c</em>{0}  &amp; 0     &amp;\cdots &amp;0     \
-0     &amp; a<em>{1} &amp; \ddots &amp;        &amp; \ddots &amp; c</em>{1} &amp; \ddots&amp;\vdots\
-\vdots&amp;\ddots &amp; \ddots &amp; \ddots &amp;        &amp;\ddots &amp;\ddots &amp;\vdots\
-0     &amp;       &amp;  \ddots&amp; a<em>{n}  &amp;  \ddots&amp;       &amp;\ddots &amp; c</em>{n}\
-c<em>{0} &amp; 0     &amp;\cdots &amp;0        &amp;b</em>{0}   &amp; 0     &amp; \cdots&amp; 0    \<br>
-0     &amp; c<em>{1} &amp; \ddots &amp;        &amp; \ddots &amp; b</em>{1} &amp; \ddots&amp;\vdots\
-\vdots&amp;\ddots &amp; \ddots &amp; \ddots &amp;        &amp;\ddots &amp;\ddots &amp;\vdots\
-0     &amp;\cdots &amp;  0     &amp; c<em>{n}  &amp;  0     &amp; \cdots&amp;0      &amp; b</em>{n}\</p>
-<p>\end{bmatrix}
-$$
-or more clearly</p>
+\sigma=\begin{bmatrix} 
+a_{0} &amp; 0     &amp; \cdots &amp; 0      &amp; c_{0}  &amp; 0     &amp;\cdots &amp;0     \\
+0     &amp; a_{1} &amp; \ddots &amp;        &amp; \ddots &amp; c_{1} &amp; \ddots&amp;\vdots\\
+\vdots&amp;\ddots &amp; \ddots &amp; \ddots &amp;        &amp;\ddots &amp;\ddots &amp;\vdots\\
+0     &amp;       &amp;  \ddots&amp; a_{n}  &amp;  \ddots&amp;       &amp;\ddots &amp; c_{n}\\
+c_{0} &amp; 0     &amp;\cdots &amp;0        &amp;b_{0}   &amp; 0     &amp; \cdots&amp; 0    \\   
+0     &amp; c_{1} &amp; \ddots &amp;        &amp; \ddots &amp; b_{1} &amp; \ddots&amp;\vdots\\
+\vdots&amp;\ddots &amp; \ddots &amp; \ddots &amp;        &amp;\ddots &amp;\ddots &amp;\vdots\\
+0     &amp;\cdots &amp;  0     &amp; c_{n}  &amp;  0     &amp; \cdots&amp;0      &amp; b_{n}
+\end{bmatrix}
+$$</p>
+<p>or more clearly</p>
 $$
 \sigma=\begin{bmatrix}
 A &amp; C\\
