@@ -2,8 +2,7 @@ from concurrent.futures import ProcessPoolExecutor,ThreadPoolExecutor
 import numpy as np
 from astropy.coordinates import SkyCoord
 import time
-
-
+rng = np.random.default_rng()
 def summary(name,timeit_results):
     r=np.array(timeit_results)
     print(f'{name} {r.size} runs: \n Mean {r.mean()} \n Standard deviation {r.std()}')
@@ -71,6 +70,42 @@ def future_dec(func,n_jobs=4):
         return results_list
     return inner
 
+def mp_low_dim(**kwargs): # this is an internal function, not for regular use
+    samp=[]
+    for i,cov in enumerate(kwargs['covs']): # run parallel along this
+        sub_sample=rng.multivariate_normal(mean=kwargs['mean'],cov=cov,method=kwargs['method'],size=kwargs['size'])
+        samp.append(sub_sample)
+    return samp
+
+def small_cov_nvm(a,b,c,method='eigh',ndraws=1,ncores=1):
+    #draw len(a) 2d mvg and combine
+    dim=2*len(a)
+    sample=np.zeros((dim,ndraws))
+    covs=[[[a[i],c[i]],[c[i],b[i]]] for i in range(dim//2)]
+    mean=np.zeros(2)
+    if ncores==1: #dont bother setting up mp if you only use 1 core
+        for i,cov in enumerate(covs): # run parallel along this
+            sub_sample=rng.multivariate_normal(mean=mean,cov=cov,method=method,size=ndraws)
+            sample[i,:],sample[i+dim//2,:]=sub_sample[:,0],sub_sample[:,1]
+        return sample.T
+    else:
+        batchsize=(dim//2)//ncores
+        extra=(dim//2)%ncores!=0
+        tp=ProcessPoolExecutor(ncores)
+        futures=[]
+        for i in range(ncores):
+            f=tp.submit(mp_low_dim,mean=mean,covs=covs[i*batchsize:(i+1)*batchsize],method=method,size=ndraws)
+            futures.append(f)
+        if extra:
+            f=tp.submit(mp_low_dim,mean=mean,covs=covs[ncores*batchsize:-1],method=method,size=ndraws)
+            futures.append(f)
+
+        results=[f.result() for f in futures]
+        # reconstruct the samples
+        for i in range(len(results)):
+            for j in range(len(results[i])):
+                sample[i*batchsize+j,:],sample[i*batchsize+j+dim//2,:]=results[i][j][:,0],results[i][j][:,1]
+        return sample.T
 def test_func(a):
     time.sleep(.2)
     return a
